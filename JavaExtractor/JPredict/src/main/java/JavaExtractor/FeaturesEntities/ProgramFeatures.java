@@ -11,18 +11,21 @@ public class ProgramFeatures {
     String textContent;
 
     String filePath;
+    String qualifiedName;
 
-    public ProgramFeatures(String name, Path filePath, String textContent) {
+    public ProgramFeatures(String name, Path filePath, String textContent, String qualifiedName) {
 
         this.name = name;
         this.filePath = filePath.toAbsolutePath().toString();
         this.textContent = textContent;
+        this.qualifiedName = qualifiedName;
     }
 
     @SuppressWarnings("StringBufferReplaceableByString")
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(qualifiedName).append(" ");
         stringBuilder.append(name).append(" ");
         stringBuilder.append(features.stream().map(ProgramRelation::toString).collect(Collectors.joining(" ")));
 

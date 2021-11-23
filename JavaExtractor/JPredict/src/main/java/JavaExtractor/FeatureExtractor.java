@@ -10,6 +10,7 @@ import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.PackageDeclaration;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -49,7 +50,9 @@ class FeatureExtractor {
         CompilationUnit m_CompilationUnit = parseFileWithRetries(code);
         FunctionVisitor functionVisitor = new FunctionVisitor(m_CommandLineValues);
 
-        functionVisitor.visit(m_CompilationUnit, null);
+        PackageDeclaration packageDeclaration = m_CompilationUnit.getPackage();
+        functionVisitor.visit(m_CompilationUnit,
+                packageDeclaration != null ? packageDeclaration.getPackageName() : null);
 
         ArrayList<MethodContent> methods = functionVisitor.getMethodContents();
 
@@ -94,8 +97,8 @@ class FeatureExtractor {
 
     private ProgramFeatures generatePathFeaturesForFunction(MethodContent methodContent) {
         ArrayList<Node> functionLeaves = methodContent.getLeaves();
-        ProgramFeatures programFeatures = new ProgramFeatures(
-                methodContent.getName(), this.filePath, methodContent.getContent());
+        ProgramFeatures programFeatures = new ProgramFeatures(methodContent.getName(), this.filePath,
+                methodContent.getContent(), methodContent.getQualifiedName());
 
         for (int i = 0; i < functionLeaves.size(); i++) {
             for (int j = i + 1; j < functionLeaves.size(); j++) {
@@ -146,11 +149,10 @@ class FeatureExtractor {
             String childId = Common.EmptyString;
             String parentRawType = currentNode.getParentNode().getUserData(Common.PropertyKey).getRawType();
             if (i == 0 || s_ParentTypeToAddChildId.contains(parentRawType)) {
-                childId = saturateChildId(currentNode.getUserData(Common.ChildId))
-                        .toString();
+                childId = saturateChildId(currentNode.getUserData(Common.ChildId)).toString();
             }
-            stringBuilder.add(String.format("%s%s%s",
-                    currentNode.getUserData(Common.PropertyKey).getType(true), childId, upSymbol));
+            stringBuilder.add(String.format("%s%s%s", currentNode.getUserData(Common.PropertyKey).getType(true),
+                    childId, upSymbol));
         }
 
         Node commonNode = sourceStack.get(sourceStack.size() - commonPrefix);
@@ -161,18 +163,16 @@ class FeatureExtractor {
             commonNodeParentRawType = parentNodeProperty.getRawType();
         }
         if (s_ParentTypeToAddChildId.contains(commonNodeParentRawType)) {
-            commonNodeChildId = saturateChildId(commonNode.getUserData(Common.ChildId))
-                    .toString();
+            commonNodeChildId = saturateChildId(commonNode.getUserData(Common.ChildId)).toString();
         }
-        stringBuilder.add(String.format("%s%s",
-                commonNode.getUserData(Common.PropertyKey).getType(true), commonNodeChildId));
+        stringBuilder.add(
+                String.format("%s%s", commonNode.getUserData(Common.PropertyKey).getType(true), commonNodeChildId));
 
         for (int i = targetStack.size() - commonPrefix - 1; i >= 0; i--) {
             Node currentNode = targetStack.get(i);
             String childId = Common.EmptyString;
             if (i == 0 || s_ParentTypeToAddChildId.contains(currentNode.getUserData(Common.PropertyKey).getRawType())) {
-                childId = saturateChildId(currentNode.getUserData(Common.ChildId))
-                        .toString();
+                childId = saturateChildId(currentNode.getUserData(Common.ChildId)).toString();
             }
             stringBuilder.add(String.format("%s%s%s", downSymbol,
                     currentNode.getUserData(Common.PropertyKey).getType(true), childId));

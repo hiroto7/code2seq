@@ -4,6 +4,7 @@ import JavaExtractor.Common.CommandLineValues;
 import JavaExtractor.Common.Common;
 import JavaExtractor.Common.MethodContent;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 @SuppressWarnings("StringEquality")
-public class FunctionVisitor extends VoidVisitorAdapter<Object> {
+public class FunctionVisitor extends VoidVisitorAdapter<String> {
     private final ArrayList<MethodContent> methods = new ArrayList<>();
     private final CommandLineValues commandLineValues;
 
@@ -20,13 +21,18 @@ public class FunctionVisitor extends VoidVisitorAdapter<Object> {
     }
 
     @Override
-    public void visit(MethodDeclaration node, Object arg) {
-        visitMethod(node);
+    public void visit(ClassOrInterfaceDeclaration node, String arg) {
+        super.visit(node, arg != null ? arg + "." + node.getName() : node.getName());
+    }
+
+    @Override
+    public void visit(MethodDeclaration node, String arg) {
+        visitMethod(node, arg != null ? arg + "." + node.getName() : node.getName());
 
         super.visit(node, arg);
     }
 
-    private void visitMethod(MethodDeclaration node) {
+    private void visitMethod(MethodDeclaration node, String qualifiedName) {
         LeavesCollectorVisitor leavesCollectorVisitor = new LeavesCollectorVisitor();
         leavesCollectorVisitor.visitDepthFirst(node);
         ArrayList<Node> leaves = leavesCollectorVisitor.getLeaves();
@@ -42,9 +48,9 @@ public class FunctionVisitor extends VoidVisitorAdapter<Object> {
 
         if (node.getBody() != null) {
             long methodLength = getMethodLength(node.getBody().toString());
-            if (commandLineValues.MaxCodeLength <= 0 ||
-                    (methodLength >= commandLineValues.MinCodeLength && methodLength <= commandLineValues.MaxCodeLength)) {
-                methods.add(new MethodContent(leaves, splitName, node.toString()));
+            if (commandLineValues.MaxCodeLength <= 0 || (methodLength >= commandLineValues.MinCodeLength
+                    && methodLength <= commandLineValues.MaxCodeLength)) {
+                methods.add(new MethodContent(leaves, splitName, node.toString(), qualifiedName));
             }
         }
     }
