@@ -1,18 +1,5 @@
 package JavaExtractor;
 
-import JavaExtractor.Common.CommandLineValues;
-import JavaExtractor.Common.Common;
-import JavaExtractor.Common.MethodContent;
-import JavaExtractor.FeaturesEntities.ProgramFeatures;
-import JavaExtractor.FeaturesEntities.Property;
-import JavaExtractor.Visitors.FunctionVisitor;
-import com.github.javaparser.JavaParser;
-import com.github.javaparser.ParseProblemException;
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.PackageDeclaration;
-
-import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -20,6 +7,21 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import com.github.javaparser.JavaParser;
+import com.github.javaparser.ParseProblemException;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.PackageDeclaration;
+import com.github.javaparser.ast.expr.QualifiedNameExpr;
+import com.github.javaparser.ast.visitor.GenericVisitorAdapter;
+
+import JavaExtractor.Common.CommandLineValues;
+import JavaExtractor.Common.Common;
+import JavaExtractor.Common.MethodContent;
+import JavaExtractor.FeaturesEntities.ProgramFeatures;
+import JavaExtractor.FeaturesEntities.Property;
+import JavaExtractor.Visitors.FunctionVisitor;
 
 @SuppressWarnings("StringEquality")
 class FeatureExtractor {
@@ -51,8 +53,19 @@ class FeatureExtractor {
         FunctionVisitor functionVisitor = new FunctionVisitor(m_CommandLineValues);
 
         PackageDeclaration packageDeclaration = m_CompilationUnit.getPackage();
-        functionVisitor.visit(m_CompilationUnit,
-                packageDeclaration != null ? packageDeclaration.getPackageName() : null);
+        if (packageDeclaration != null) {
+            QualifiedNameExpr qualifiedNameExpr = new GenericVisitorAdapter<QualifiedNameExpr, Void>() {
+                @Override
+                public QualifiedNameExpr visit(QualifiedNameExpr n, Void arg) {
+                    return n;
+                }
+            }.visit(packageDeclaration, null);
+
+            functionVisitor.visit(m_CompilationUnit,
+                    qualifiedNameExpr.getQualifiedName());
+        } else {
+            functionVisitor.visit(m_CompilationUnit, null);
+        }
 
         ArrayList<MethodContent> methods = functionVisitor.getMethodContents();
 
