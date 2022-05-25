@@ -113,8 +113,15 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "-vd",
-        "--val_data",
-        dest="val_data_path",
+        "--val1_data",
+        dest="val1_data_path",
+        help="path to validation data file",
+        required=True,
+    )
+    parser.add_argument(
+        "-vd",
+        "--val2_data",
+        dest="val2_data_path",
         help="path to validation data file",
         required=True,
     )
@@ -186,7 +193,8 @@ if __name__ == "__main__":
 
     train_data_path = args.train_data_path
     test_data_path = args.test_data_path
-    val_data_path = args.val_data_path
+    val1_data_path = args.val_data_path1
+    val2_data_path = args.val_data_path2
     subtoken_histogram_path = args.subtoken_histogram
     node_histogram_path = args.node_histogram
 
@@ -203,7 +211,8 @@ if __name__ == "__main__":
 
     num_training_examples = 0
     for data_file_path, data_role in zip(
-        [test_data_path, val_data_path, train_data_path], ["test", "val", "train"]
+        [test_data_path, val1_data_path, val2_data_path, train_data_path],
+        ["test", "val1", "val2", "train"],
     ):
         num_examples = process_file(
             file_path=data_file_path,
