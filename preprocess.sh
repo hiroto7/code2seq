@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env bash -eu
 ###########################################################
 # Change the following values to preprocess a new dataset.
 # TRAIN_DIR, VAL_DIR and TEST_DIR should be paths to      
