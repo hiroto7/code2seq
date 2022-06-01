@@ -112,14 +112,14 @@ if __name__ == "__main__":
         required=True,
     )
     parser.add_argument(
-        "-vd",
+        "-vd1",
         "--val1_data",
         dest="val1_data_path",
         help="path to validation data file",
         required=True,
     )
     parser.add_argument(
-        "-vd",
+        "-vd2",
         "--val2_data",
         dest="val2_data_path",
         help="path to validation data file",
@@ -193,8 +193,8 @@ if __name__ == "__main__":
 
     train_data_path = args.train_data_path
     test_data_path = args.test_data_path
-    val1_data_path = args.val_data_path1
-    val2_data_path = args.val_data_path2
+    val1_data_path = args.val1_data_path
+    val2_data_path = args.val2_data_path
     subtoken_histogram_path = args.subtoken_histogram
     node_histogram_path = args.node_histogram
 
