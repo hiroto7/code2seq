@@ -31,7 +31,7 @@ MAX_CONTEXTS=200
 SUBTOKEN_VOCAB_SIZE=186277
 TARGET_VOCAB_SIZE=26347
 NUM_THREADS=64
-PYTHON=python3.9
+PYTHON=python3
 ###########################################################
 
 TRAIN_DATA_FILE=${DATASET_NAME}.train.raw.txt
@@ -72,6 +72,6 @@ ${PYTHON} preprocess.py --train_data ${TRAIN_DATA_FILE} --test_data ${TEST_DATA_
     
 # If all went well, the raw data files can be deleted, because preprocess.py creates new files 
 # with truncated and padded number of paths for each example.
-rm ${TRAIN_DATA_FILE} ${VAL1_DATA_FILE} ${VAL2_DATA_FILE} ${TEST_DATA_FILE} ${TARGET_HISTOGRAM_FILE} ${SOURCE_SUBTOKEN_HISTOGRAM} \
-  ${NODE_HISTOGRAM_FILE}
+# rm ${TRAIN_DATA_FILE} ${VAL1_DATA_FILE} ${VAL2_DATA_FILE} ${TEST_DATA_FILE} ${TARGET_HISTOGRAM_FILE} ${SOURCE_SUBTOKEN_HISTOGRAM} \
+#   ${NODE_HISTOGRAM_FILE}
 

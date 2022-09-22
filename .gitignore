@@ -4,3 +4,5 @@
 *.iml
 *.xml
 *.pyc
+
+path_contexts.*.raw.txt
