@@ -21,9 +21,9 @@
 #   recommended to use a multi-core machine for the preprocessing 
 #   step and set this value to the number of cores.
 # PYTHON - python3 interpreter alias.
-TRAIN_DIR=../data/raw
-VAL_DIR=../data/raw
-TEST_DIR=../data/raw
+TRAIN_DIR=../data/raw/train
+VAL_DIR=../data/raw/val
+TEST_DIR=../data/raw/test
 DATASET_NAME=path_contexts
 MAX_DATA_CONTEXTS=1000
 MAX_CONTEXTS=200
